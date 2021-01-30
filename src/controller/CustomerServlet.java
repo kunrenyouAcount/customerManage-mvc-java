@@ -4,20 +4,21 @@ import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 
+import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-import user.UserBean;
-import user.UserLogic;
-import util.LogUtil;
-import util.StringUtil;
 import customer.CustomerBean;
 import customer.CustomerListBean;
 import customer.CustomerListLogic;
 import customer.CustomerLogic;
+import user.UserBean;
+import user.UserLogic;
+import util.LogUtil;
+import util.StringUtil;
 
 /**
  * 顧客管理のサーブレット
@@ -54,6 +55,8 @@ public class CustomerServlet extends BaseServlet {
             procSessionError(request, response, session);
             return;
         }
+
+
 
         UserLogic userLogic = new UserLogic();
         user = userLogic.load(user.getId());
@@ -129,6 +132,7 @@ public class CustomerServlet extends BaseServlet {
      * @param request   HTTPのリクエスト
      * @param response  HTTPのレスポンス
      */
+
     private void procSearch(HttpServletRequest request, HttpServletResponse response) throws ServletException,
             IOException {
         getServletContext().getRequestDispatcher("/WEB-INF/customer/search.jsp").forward(request, response);
@@ -187,9 +191,20 @@ public class CustomerServlet extends BaseServlet {
      */
     private void procUpdate(HttpServletRequest request, HttpServletResponse response, HttpSession session)
             throws ServletException, IOException {
-        // TODO 未実装
 
-        getServletContext().getRequestDispatcher("/WEB-INF/xxxx/xxxx.jsp").forward(request, response);
+        CustomerBean cb = (CustomerBean) session.getAttribute("customer");
+        CustomerLogic customerLogic = new CustomerLogic();
+        String errMessage = null;
+        errMessage = customerLogic.update(cb);
+
+        session.removeAttribute("customer");
+
+        if (errMessage == null) {
+            getServletContext().getRequestDispatcher("/WEB-INF/customer/update_success.jsp").forward(request, response);
+        } else {
+            request.setAttribute("errMessage", errMessage);
+            getServletContext().getRequestDispatcher("/WEB-INF/customer/update_fail.jsp").forward(request, response);
+        }
     }
 
     /**
@@ -203,7 +218,7 @@ public class CustomerServlet extends BaseServlet {
     private void procNew(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         // TODO 未実装
 
-        getServletContext().getRequestDispatcher("/WEB-INF/xxxx/xxxx.jsp").forward(request, response);
+        getServletContext().getRequestDispatcher("/WEB-INF/customer/new.jsp").forward(request, response);
     }
 
     /**
@@ -217,9 +232,23 @@ public class CustomerServlet extends BaseServlet {
      */
     private void procAdd(HttpServletRequest request, HttpServletResponse response, HttpSession session)
             throws ServletException, IOException {
-        // TODO 未実装
+        
+           CustomerBean cb = (CustomerBean) session.getAttribute("customer");
+        CustomerLogic customerLogic = new CustomerLogic();
+        String errMessage = null;
+        errMessage = customerLogic.add(cb);
 
-        getServletContext().getRequestDispatcher("/WEB-INF/xxxx/xxxx.jsp").forward(request, response);
+        session.removeAttribute("customer");
+
+        if (errMessage == null) {
+            getServletContext().getRequestDispatcher("/WEB-INF/customer/add_success.jsp").forward(request, response);
+        } else {
+            request.setAttribute("errMessage", errMessage);
+            getServletContext().getRequestDispatcher("/WEB-INF/customer/add_fail.jsp").forward(request, response);
+        }
+
+
+
     }
 
     /**
@@ -233,9 +262,13 @@ public class CustomerServlet extends BaseServlet {
      */
     private void procDeleteConfirm(HttpServletRequest request, HttpServletResponse response, String id)
             throws ServletException, IOException {
-        // TODO 未実装
+        CustomerLogic customerLogic = new CustomerLogic();
+        int customerId = Integer.parseInt(id);
+        CustomerBean customer = customerLogic.load(customerId);
+        HttpSession session = request.getSession();
+        session.setAttribute("customer", customer);
 
-        getServletContext().getRequestDispatcher("/WEB-INF/xxxx/xxxx.jsp").forward(request, response);
+        getServletContext().getRequestDispatcher("/WEB-INF/customer/delete_confirm.jsp").forward(request, response);
     }
 
     /**
@@ -250,8 +283,15 @@ public class CustomerServlet extends BaseServlet {
     private void procDelete(HttpServletRequest request, HttpServletResponse response, HttpSession session)
             throws ServletException, IOException {
         // TODO 未実装
-
-        getServletContext().getRequestDispatcher("/WEB-INF/xxxx/xxxx.jsp").forward(request, response);
+        CustomerBean customer = (CustomerBean)session.getAttribute("customer");
+        CustomerLogic customerLogic = new CustomerLogic();
+        String errorMsg = customerLogic.delete(customer);
+        session.setAttribute("errorMsg", errorMsg);
+        if(errorMsg == null) {
+            getServletContext().getRequestDispatcher("/WEB-INF/customer/delete_success.jsp").forward(request, response);
+        } else {
+            getServletContext().getRequestDispatcher("/WEB-INF/customer/delete_fail.jsp").forward(request, response);
+        }
     }
 
     /**
@@ -264,9 +304,7 @@ public class CustomerServlet extends BaseServlet {
      */
     private void procEdit(HttpServletRequest request, HttpServletResponse response) throws ServletException,
             IOException {
-        // TODO 未実装
-
-        getServletContext().getRequestDispatcher("/WEB-INF/xxxx/xxxx.jsp").forward(request, response);
+        getServletContext().getRequestDispatcher("/WEB-INF/customer/edit.jsp").forward(request, response);
     }
 
     /**
@@ -279,10 +317,73 @@ public class CustomerServlet extends BaseServlet {
      */
     private void procEditConfirm(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        // TODO 未実装
+        HttpSession session = request.getSession();
+        CustomerBean cb = (CustomerBean) session.getAttribute("customer");
+        String strName = request.getParameter("name");
+        String strZip = request.getParameter("zip");
+        String strAddress1 = request.getParameter("address1");
+        String strAddress2 = request.getParameter("address2");
+        String strTel = request.getParameter("tel");
+        String strFax = request.getParameter("fax");
+        String strEmail = request.getParameter("email");
 
-        getServletContext().getRequestDispatcher("/WEB-INF/xxxx/xxxx.jsp").forward(request, response);
+        RequestDispatcher dispatcher = null;
+
+        if (strName == null || strZip == null || strAddress1 == null || strAddress2 == null || strTel == null || strFax == null || strEmail == null) {
+            dispatcher = request.getRequestDispatcher("/WEB-INF/customer/edit.jsp");
+        }
+        if(!(strName.length() > 0 && strName.length() <= 20 && !strName.matches("[a-zA-Zａ-ｚＡ-Ｚ\\u3040-\\u309f\\u30a0-\\u30ff\\uff65-\\uff9f\\u4E00-\\u9FFF]"))) {
+            dispatcher = request.getRequestDispatcher("/WEB-INF/customer/edit.jsp");
+        }
+        if(!(strZip.matches("[0-9]{3}-[0-9]{4}"))) {
+            dispatcher = request.getRequestDispatcher("/WEB-INF/customer/edit.jsp");
+        }
+        if(!(strAddress1.length() > 0 && strAddress1.length() <= 100)) {
+            dispatcher = request.getRequestDispatcher("/WEB-INF/customer/edit.jsp");
+        }
+        if(!(strAddress2.length() <= 100)) {
+            dispatcher = request.getRequestDispatcher("/WEB-INF/customer/edit.jsp");
+        }
+        if(!(strTel.matches("0\\d{2,3}-\\d{1,4}-\\d{4}|(070|080|090)-\\\\d{4}-\\\\d{4}"))) {
+            dispatcher = request.getRequestDispatcher("/WEB-INF/customer/edit.jsp");
+        }
+        if(!((strFax.length()==0)||(strFax.matches("0\\d{2,3}-\\d{1,4}-\\d{4}|(070|080|090)-\\d{4}-\\d{4}")))) {
+            dispatcher = request.getRequestDispatcher("/WEB-INF/customer/edit.jsp");
+        }
+        if(!(strEmail.length() > 0 && strEmail.length() <= 100 && strEmail.matches("[A-Za-z0-9]{1}[A-Za-z0-9_.-]*@{1}[A-Za-z0-9_.-]{1,}\\.[A-Za-z0-9]{1,}"))) {
+            dispatcher = request.getRequestDispatcher("/WEB-INF/customer/edit.jsp");
+        }
+
+        if (!cb.getName().equals(strName)) {
+            cb.setName(strName);
+        }
+        if (!cb.getZip().equals(strZip)) {
+            cb.setZip(strZip);
+        }
+        if (!cb.getAddress1().equals(strAddress1)) {
+            cb.setAddress1(strAddress1);
+        }
+        if (!cb.getAddress2().equals(strAddress2)) {
+            cb.setAddress2(strAddress2);
+        }
+        if (!cb.getTel().equals(strTel)) {
+            cb.setTel(strTel);
+        }
+        if (!cb.getFax().equals(strFax)) {
+            cb.setFax(strFax);
+        }
+        if (!cb.getEmail().equals(strEmail)) {
+            cb.setEmail(strEmail);
+        }
+
+        if(dispatcher == null) {
+        session.setAttribute("customer", cb);
+        dispatcher = request.getRequestDispatcher("/WEB-INF/customer/edit_confirm.jsp");
+        }
+        dispatcher.forward(request, response);
     }
+
+
 
     /**
      * リクエスト内の顧客情報をセッションに設定し、入力確認画面に遷移する
@@ -294,8 +395,52 @@ public class CustomerServlet extends BaseServlet {
      */
     private void procNewConfirm(HttpServletRequest request, HttpServletResponse response) throws ServletException,
             IOException, UnsupportedEncodingException {
-        // TODO 未実装
+        String strName = request.getParameter("name");
+        String strZip = request.getParameter("zip");
+        String strAddress1 = request.getParameter("address1");
+        String strAddress2 = request.getParameter("address2");
+        String strTel = request.getParameter("tel");
+        String strFax = request.getParameter("fax");
+        String strEmail = request.getParameter("email");
 
-        getServletContext().getRequestDispatcher("/WEB-INF/xxxx/xxxx.jsp").forward(request, response);
+        RequestDispatcher dispatcher = null;
+
+//        if (strName == null || strZip == null || strAddress1 == null || strAddress2 == null || strTel == null || strFax == null || strEmail == null) {
+//            System.out.println();
+//            dispatcher = request.getRequestDispatcher("/WEB-INF/customer/new.jsp");
+//        }
+        if (strName == null || strZip == null || strAddress1 == null || strAddress2 == null || strTel == null || strFax == null || strEmail == null) {
+            dispatcher = request.getRequestDispatcher("/WEB-INF/customer/new.jsp");
+        }
+        if(!(strName.length() > 0 && strName.length() <= 20 && !strName.matches("[a-zA-Zａ-ｚＡ-Ｚ\\u3040-\\u309f\\u30a0-\\u30ff\\uff65-\\uff9f\\u4E00-\\u9FFF]"))) {
+            dispatcher = request.getRequestDispatcher("/WEB-INF/customer/new.jsp");
+        }
+        if(!(strZip.matches("[0-9]{3}-[0-9]{4}"))) {
+            dispatcher = request.getRequestDispatcher("/WEB-INF/customer/new.jsp");
+        }
+        if(!(strAddress1.length() > 0 && strAddress1.length() <= 100)) {
+            dispatcher = request.getRequestDispatcher("/WEB-INF/customer/new.jsp");
+        }
+        if(!(strAddress2.length() <= 100)) {
+            dispatcher = request.getRequestDispatcher("/WEB-INF/customer/new.jsp");
+        }
+        if(!(strTel.matches("0\\d{2,3}-\\d{1,4}-\\d{4}|(070|080|090)-\\\\d{4}-\\\\d{4}"))) {
+            dispatcher = request.getRequestDispatcher("/WEB-INF/customer/new.jsp");
+        }
+        if(!((strFax.length()==0)||(strFax.matches("0\\d{2,3}-\\d{1,4}-\\d{4}|(070|080|090)-\\d{4}-\\d{4}")))) {
+            dispatcher = request.getRequestDispatcher("/WEB-INF/customer/new.jsp");
+        }
+        if(!(strEmail.length() > 0 && strEmail.length() <= 100 && strEmail.matches("[A-Za-z0-9]{1}[A-Za-z0-9_.-]*@{1}[A-Za-z0-9_.-]{1,}\\.[A-Za-z0-9]{1,}"))) {
+            dispatcher = request.getRequestDispatcher("/WEB-INF/customer/new.jsp");
+        }
+
+        if(dispatcher == null) {
+            CustomerBean cb = new CustomerBean(strName, strZip, strAddress1, strAddress2, strTel, strFax, strEmail);
+            HttpSession session = request.getSession();
+            session.setAttribute("customer", cb);
+            dispatcher = request.getRequestDispatcher("/WEB-INF/customer/new_confirm.jsp");
+
+        }
+        dispatcher.forward(request, response);
     }
 }

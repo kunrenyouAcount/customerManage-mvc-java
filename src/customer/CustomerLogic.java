@@ -1,9 +1,11 @@
 package customer;
 
+import static constants.MessageConstants.*;
+
 import javax.servlet.http.HttpServletRequest;
 
-import util.LogUtil;
 import dao.CustomerDao;
+import util.LogUtil;
 
 /**
  * 顧客情報のロジック
@@ -30,11 +32,17 @@ public class CustomerLogic {
      * @return エラーメッセージ(処理成功時、null)
      */
     public String add(CustomerBean customer) {
+
+
         LogUtil.println(this.getClass().getSimpleName() + "#add");
 
-        // TODO 未実装
+        String errMessage = null;
+        CustomerDao customerDao = new CustomerDao();
+        if (customerDao.add(customer) != null) {
+            errMessage = MESSAGE_CAN_NOT_ADD;
+        }
 
-        return null;
+        return errMessage;
     }
 
     /**
@@ -45,9 +53,14 @@ public class CustomerLogic {
     public String update(CustomerBean customer) {
         LogUtil.println(this.getClass().getSimpleName() + "#update");
 
-        // TODO 未実装
+        String errMessage = null;
+        CustomerDao customerDao = new CustomerDao();
+        if (customerDao.update(customer) != null) {
+            errMessage = MESSAGE_CAN_NOT_UPDATE;
+        }
 
-        return null;
+        return errMessage;
+
     }
 
     /**
@@ -57,10 +70,11 @@ public class CustomerLogic {
      */
     public String delete(CustomerBean customer) {
         LogUtil.println(this.getClass().getSimpleName() + "#delete");
+        
+        CustomerDao customerDao = new CustomerDao();
+        String errorMsg = customerDao.delete(customer.getId());
 
-        // TODO 未実装
-
-        return null;
+        return errorMsg;
     }
 
     /**

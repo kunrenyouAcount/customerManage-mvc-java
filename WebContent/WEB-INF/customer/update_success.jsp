@@ -9,9 +9,12 @@
 <body>
     <h1>顧客管理</h1>
     <div class="main">
-
-        <!-- TODO ｢更新完了｣画面 -->
-
+        <h2>更新完了</h2>
+        <form action="CustomerServlet" method="post">
+            <p>
+                <button name="state" value="search">検索画面</button>
+            </p>
+        </form>
     </div>
 </body>
 </html>

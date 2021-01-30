@@ -21,6 +21,17 @@ public class CustomerBean {
     /** E-mailアドレス */
     private String strEmail;
 
+    public CustomerBean() {};
+
+    public CustomerBean(String strName, String strZip, String strAddress1, String strAddress2, String strTel, String strFax, String strEmail) {
+        this.strName = strName;
+        this.strZip = strZip;
+        this.strAddress1 = strAddress1;
+        this.strAddress2 = strAddress2;
+        this.strTel = strTel;
+        this.strFax = strFax;
+        this.strEmail = strEmail;
+    }
     /**
      * IDのセッター
      * @param id ID

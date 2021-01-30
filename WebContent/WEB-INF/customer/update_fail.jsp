@@ -1,4 +1,5 @@
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<% String str = (String) request.getAttribute("errMessage"); %>
 <!doctype html>
 <html>
 <head>
@@ -9,9 +10,13 @@
 <body>
     <h1>顧客管理</h1>
     <div class="main">
-
-        <!-- TODO ｢更新未完了｣画面 -->
-
+        <h2>更新未完了</h2>
+        <h2><%= str %></h2>
+        <form action="CustomerServlet" method="post">
+            <p>
+                <button name="state" value="search">検索画面</button>
+            </p>
+        </form>
     </div>
 </body>
 </html>

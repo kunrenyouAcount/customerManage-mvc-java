@@ -1,13 +1,14 @@
 package dao;
 
+import static constants.MessageConstants.*;
+
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 
-import util.LogUtil;
 import customer.CustomerBean;
-
+import util.LogUtil;
 /**
  * 顧客管理DAO(オートコミット)
  *
@@ -36,9 +37,21 @@ public class CustomerDao extends BaseDao {
                 customer.setZip(rs.getString("zip"));
                 customer.setName(rs.getString("name"));
                 customer.setAddress1(rs.getString("address1"));
-                customer.setAddress2(rs.getString("address2"));
+                //「住所2」は任意項目のため、未入力の場合nullが表示されてしまうため、データベースから取り出した際に空欄の代入が必要
+                String address2 = rs.getString("address2");
+                if(address2 == null) {
+                    customer.setAddress2("");
+                } else {
+                    customer.setAddress2(address2);
+                }
                 customer.setTel(rs.getString("tel"));
-                customer.setFax(rs.getString("fax"));
+                //「FAX」は任意項目のため、未入力の場合nullが表示されてしまうため、データベースから取り出した際に空欄の代入が必要
+                String fax = rs.getString("fax");
+                if(fax == null) {
+                    customer.setFax("");
+                } else {
+                    customer.setFax(fax);
+                }
                 customer.setEmail(rs.getString("email"));
                 alCustomer.add(customer);
             }
@@ -83,7 +96,13 @@ public class CustomerDao extends BaseDao {
                 customer.setZip(rs.getString("zip"));
                 customer.setName(rs.getString("name"));
                 customer.setAddress1(rs.getString("address1"));
-                customer.setAddress2(rs.getString("address2"));
+                //「住所2」は任意項目のため、未入力の場合nullが表示されてしまうため、データベースから取り出した際に空欄の代入が必要
+                String address2 = rs.getString("address2");
+                if(address2 == null) {
+                    customer.setAddress2("");
+                } else {
+                    customer.setAddress2(address2);
+                }
                 alCustomer.add(customer);
             }
             rs.close();
@@ -125,9 +144,21 @@ public class CustomerDao extends BaseDao {
                 customer.setName(rs.getString("name"));
                 customer.setZip(rs.getString("zip"));
                 customer.setAddress1(rs.getString("address1"));
-                customer.setAddress2(rs.getString("address2"));
+                //「住所2」は任意項目のため、未入力の場合nullが表示されてしまうため、データベースから取り出した際に空欄の代入が必要
+                String address2 = rs.getString("address2");
+                if(address2 == null) {
+                    customer.setAddress2("");
+                } else {
+                    customer.setAddress2(address2);
+                }
                 customer.setTel(rs.getString("tel"));
-                customer.setFax(rs.getString("fax"));
+                //「FAX」は任意項目のため、未入力の場合nullが表示されてしまうため、データベースから取り出した際に空欄の代入が必要
+                String fax = rs.getString("fax");
+                if(fax == null) {
+                    customer.setFax("");
+                } else {
+                    customer.setFax(fax);
+                }
                 customer.setEmail(rs.getString("email"));
                 rs.close();
             }
@@ -152,25 +183,88 @@ public class CustomerDao extends BaseDao {
      */
     public String add(CustomerBean customer) {
         LogUtil.println(this.getClass().getSimpleName() + "#add");
+        String errMessage = null;
+        PreparedStatement pstmt = null;
+        String strSql = "INSERT INTO CUSTOMER (id,name,zip,address1,address2,tel,fax,email)"
+                + " VALUES(sequence_customer_id.NEXTVAL,?, ?, ?, ?, ?, ?, ?)";
 
-        // TODO 未実装
+        try {
+            open();
+            pstmt = conn.prepareStatement(strSql);
+            pstmt.setString(1, customer.getName());
+            pstmt.setString(2, customer.getZip());
+            pstmt.setString(3, customer.getAddress1());
+            pstmt.setString(4, customer.getAddress2());
+            pstmt.setString(5, customer.getTel());
+            pstmt.setString(6, customer.getFax());
+            pstmt.setString(7, customer.getEmail());
+            pstmt.executeUpdate();
+        } catch (ClassNotFoundException | SQLException e) {
+            errMessage = e.getMessage();
+            LogUtil.printStackTrace(e);
+        } finally {
+            try {
+                pstmt.close();
+                close();
+            } catch (SQLException e) {
+                errMessage = e.getMessage();
+                LogUtil.printStackTrace(e);
+            }
+        }
 
-        return null;
+        return errMessage;
     }
+
+
+
+
+
 
     /**
      * 顧客情報テーブルの指定の顧客情報を更新する
      * @param cutomer 顧客情報Bean
      * @return エラーメッセージ(処理成功時、null)
      */
-    public String update(CustomerBean cutomer) {
+    public String update(CustomerBean customer) {
         LogUtil.println(this.getClass().getSimpleName() + "#update");
+        String errMessage = null;
+        PreparedStatement pstmt = null;
 
-        // TODO 未実装
+        System.out.println(customer.getId());
+        String strSql = "UPDATE CUSTOMER SET NAME = ?,ZIP = ?,ADDRESS1 = ?,ADDRESS2 = ?,TEL = ?,FAX = ?, EMAIL = ?  WHERE id = ?";
 
-        return null;
+        try {
+            open();
+            pstmt = conn.prepareStatement(strSql);
+            pstmt.setString(1, customer.getName());
+            pstmt.setString(2, customer.getZip());
+            pstmt.setString(3, customer.getAddress1());
+            pstmt.setString(4, customer.getAddress2());
+            pstmt.setString(5, customer.getTel());
+            pstmt.setString(6, customer.getFax());
+            pstmt.setString(7, customer.getEmail());
+            pstmt.setInt(8, customer.getId());
+            pstmt.executeUpdate();
+        } catch (ClassNotFoundException | SQLException e) {
+            errMessage = e.getMessage();
+            LogUtil.printStackTrace(e);
+        } finally {
+            try {
+                pstmt.close();
+                close();
+            } catch (SQLException e) {
+                errMessage = e.getMessage();
+                LogUtil.printStackTrace(e);
+            }
+        }
+        return errMessage;
     }
 
+    /**
+     * IDを指定して顧客情報テーブルから顧客情報を削除する
+     * @param id 顧客情報テーブルのID
+     * @return エラーメッセージ(処理成功時、null)
+     */
     /**
      * IDを指定して顧客情報テーブルから顧客情報を削除する
      * @param id 顧客情報テーブルのID
@@ -180,7 +274,32 @@ public class CustomerDao extends BaseDao {
         LogUtil.println(this.getClass().getSimpleName() + "#delete");
 
         // TODO 未実装
+        String errMessage = null;
+        PreparedStatement pstmt = null;
+        String strSql = "DELETE FROM customer WHERE id = ?";
 
-        return null;
+        try {
+            open();
+            pstmt = conn.prepareStatement(strSql);
+            pstmt.setInt(1, id);
+
+            int intResult = pstmt.executeUpdate();
+            if (intResult != 1) {
+                errMessage = MESSAGE_CAN_NOT_DELETE;
+            }
+        } catch (SQLException | ClassNotFoundException e) {
+            errMessage = e.getMessage();
+            LogUtil.printStackTrace(e);
+        } finally {
+            try {
+                pstmt.close();
+                close();
+            } catch (SQLException e) {
+                errMessage = e.getMessage();
+                LogUtil.printStackTrace(e);
+            }
+        }
+        return errMessage;
     }
+
 }
