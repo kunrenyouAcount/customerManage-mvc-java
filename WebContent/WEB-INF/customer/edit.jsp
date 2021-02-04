@@ -81,12 +81,12 @@
             alert("TELが入力されていません。");
             return false;
         }
-        if (!/^0\d{2,3}-\d{1,4}-\d{4}$|^(070|080|090)-\d{4}-\d{4}$/.test(document.form1.tel.value)) {
+        if (!/^0\d{1,3}-\d{1,4}-\d{4}$|^(070|080|090)-\d{4}-\d{4}$/.test(document.form1.tel.value)) {
             alert("ハイフンを含んだ正しいTELの値を入力してください。")
             return false;
         }
         if (!(document.form1.fax.value == "")) {
-            if (!/^0\d{2,3}-\d{1,4}-\d{4}$|^(070|080|090)-\d{4}-\d{4}$/.test(document.form1.fax.value)) {
+            if (!/^0\d{1,3}-\d{1,4}-\d{4}$|^(070|080|090)-\d{4}-\d{4}$/.test(document.form1.fax.value)) {
                 alert("ハイフンを含んだ正しいFAXの値を入力してください。")
                 return false;
             }

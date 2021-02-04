@@ -344,10 +344,10 @@ public class CustomerServlet extends BaseServlet {
         if(!(strAddress2.length() <= 100)) {
             dispatcher = request.getRequestDispatcher("/WEB-INF/customer/edit.jsp");
         }
-        if(!(strTel.matches("0\\d{2,3}-\\d{1,4}-\\d{4}|(070|080|090)-\\\\d{4}-\\\\d{4}"))) {
+        if(!(strTel.matches("0\\d{1,3}-\\d{1,4}-\\d{4}|(070|080|090)-\\\\d{4}-\\\\d{4}"))) {
             dispatcher = request.getRequestDispatcher("/WEB-INF/customer/edit.jsp");
         }
-        if(!((strFax.length()==0)||(strFax.matches("0\\d{2,3}-\\d{1,4}-\\d{4}|(070|080|090)-\\d{4}-\\d{4}")))) {
+        if(!((strFax.length()==0)||(strFax.matches("0\\d{1,3}-\\d{1,4}-\\d{4}|(070|080|090)-\\d{4}-\\d{4}")))) {
             dispatcher = request.getRequestDispatcher("/WEB-INF/customer/edit.jsp");
         }
         if(!(strEmail.length() > 0 && strEmail.length() <= 100 && strEmail.matches("[A-Za-z0-9]{1}[A-Za-z0-9_.-]*@{1}[A-Za-z0-9_.-]{1,}\\.[A-Za-z0-9]{1,}"))) {
@@ -424,10 +424,10 @@ public class CustomerServlet extends BaseServlet {
         if(!(strAddress2.length() <= 100)) {
             dispatcher = request.getRequestDispatcher("/WEB-INF/customer/new.jsp");
         }
-        if(!(strTel.matches("0\\d{2,3}-\\d{1,4}-\\d{4}|(070|080|090)-\\\\d{4}-\\\\d{4}"))) {
+        if(!(strTel.matches("0\\d{1,3}-\\d{1,4}-\\d{4}|(070|080|090)-\\\\d{4}-\\\\d{4}"))) {
             dispatcher = request.getRequestDispatcher("/WEB-INF/customer/new.jsp");
         }
-        if(!((strFax.length()==0)||(strFax.matches("0\\d{2,3}-\\d{1,4}-\\d{4}|(070|080|090)-\\d{4}-\\d{4}")))) {
+        if(!((strFax.length()==0)||(strFax.matches("0\\d{1,3}-\\d{1,4}-\\d{4}|(070|080|090)-\\d{4}-\\d{4}")))) {
             dispatcher = request.getRequestDispatcher("/WEB-INF/customer/new.jsp");
         }
         if(!(strEmail.length() > 0 && strEmail.length() <= 100 && strEmail.matches("[A-Za-z0-9]{1}[A-Za-z0-9_.-]*@{1}[A-Za-z0-9_.-]{1,}\\.[A-Za-z0-9]{1,}"))) {
