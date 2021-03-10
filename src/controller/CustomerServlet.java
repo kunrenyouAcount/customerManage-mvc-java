@@ -232,7 +232,7 @@ public class CustomerServlet extends BaseServlet {
      */
     private void procAdd(HttpServletRequest request, HttpServletResponse response, HttpSession session)
             throws ServletException, IOException {
-        
+
            CustomerBean cb = (CustomerBean) session.getAttribute("customer");
         CustomerLogic customerLogic = new CustomerLogic();
         String errMessage = null;
