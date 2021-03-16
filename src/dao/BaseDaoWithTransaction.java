@@ -11,17 +11,13 @@ import util.LogUtil;
  */
 public class BaseDaoWithTransaction {
 
-    /** JDBCドライバ名 */
-    private static final String JDBC_DRIVER_NAME = "oracle.jdbc.driver.OracleDriver";
+	final String servername = "localhost";
+	final String databasename = "customermanage";
 
-    /** DBの接続先URL */
-    private static final String CONNECTION_URL = "jdbc:oracle:thin:@localhost:1521:XE";
-
-    /** DBへ接続時のユーザーID */
-    private static final String CONNECTION_USER = "customermanager";
-
-    /** DBへ接続時のパスワード */
-    private static final String CONNECTION_PASSWORD = "customer";
+	//データベース接続情報
+	final String JDBC_URL = "jdbc:mysql://" + servername + "/" + databasename + "?serverTimeZone=JST";
+	final String DB_USER = "customermanager";
+	final String DB_PASS = "customer";
 
     /** DBへの接続 */
     Connection conn = null;
@@ -36,10 +32,9 @@ public class BaseDaoWithTransaction {
         String errMessage = null;
 
         try {
-            Class.forName(JDBC_DRIVER_NAME);
-            conn = DriverManager.getConnection(CONNECTION_URL, CONNECTION_USER, CONNECTION_PASSWORD);
+            conn = DriverManager.getConnection(JDBC_URL, DB_USER, DB_PASS);
             conn.setAutoCommit(false);
-        } catch (ClassNotFoundException | SQLException e) {
+        } catch (SQLException e) {
             errMessage = e.getMessage();
             LogUtil.printStackTrace(e);
         }

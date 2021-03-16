@@ -5,8 +5,8 @@ import static constants.MessageConstants.*;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 
-import util.LogUtil;
 import customer.CustomerBean;
+import util.LogUtil;
 
 /**
  * 顧客管理DAO(トランザクション制御あり)
@@ -25,8 +25,8 @@ public class CustomerDaoWithTransaction extends BaseDaoWithTransaction {
 
         String errMessage = null;
         PreparedStatement pstmt = null;
-        String strSql = "INSERT INTO customer (id,name,zip,address1,address2,tel,fax,email)"
-                + " VALUES(sequence_customer_id.NEXTVAL,?,?,?,?,?,?,?)";
+        String strSql = "INSERT INTO customer (name,zip,address1,address2,tel,fax,email)"
+                + " VALUES(?,?,?,?,?,?,?)";
 
         try {
             pstmt = conn.prepareStatement(strSql);

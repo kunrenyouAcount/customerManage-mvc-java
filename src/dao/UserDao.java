@@ -16,9 +16,6 @@ import util.LogUtil;
  */
 public class UserDao extends BaseDao {
 
-    /** DBMS_CRYPTOを使用した暗号化･復号化時のパスワード */
-    private static final String SECRET = "SECPWD";
-
     /**
      * ログイン名とログインパスワードを指定してユーザーテーブルからユーザー情報を取得する
      * @param login ログイン名
@@ -30,8 +27,7 @@ public class UserDao extends BaseDao {
 
         PreparedStatement pstmt = null;
         UserBean user = null;
-        String strSql = "SELECT ID, LOGIN, LVL, NAME, PWD_DECRYPT(PWD, '" +
-                SECRET + "') FROM LOGIN_USER WHERE LOGIN=? AND PWD=PWD_ENCRYPT(?, '" + SECRET + "')";
+        String strSql = "SELECT ID, LOGIN, LVL, NAME, PWD FROM LOGIN_USER WHERE LOGIN=? AND PWD=?";
         try {
             open();
             pstmt = conn.prepareStatement(strSql);
@@ -71,8 +67,8 @@ public class UserDao extends BaseDao {
 
         String errMessage = null;
         PreparedStatement pstmt = null;
-        String strSql = "UPDATE LOGIN_USER SET pwd=PWD_ENCRYPT(?,'" + SECRET + "')"
-                + " WHERE id=? AND pwd=PWD_ENCRYPT(?, '" + SECRET + "')";
+        String strSql = "UPDATE LOGIN_USER SET PWD=?"
+                + " WHERE id=? AND PWD=?";
         try {
             open();
             pstmt = conn.prepareStatement(strSql);
@@ -110,8 +106,8 @@ public class UserDao extends BaseDao {
 
         String errMessage = null;
         PreparedStatement pstmt = null;
-        String strSql = "INSERT INTO LOGIN_USER (id,name,login,lvl,pwd)"
-                + " VALUES(sequence_login_user_id.NEXTVAL,?,?,?,PWD_ENCRYPT(?, '" + SECRET + "'))";
+        String strSql = "INSERT INTO LOGIN_USER (name,login,lvl,PWD)"
+                + " VALUES(?,?,?,?)";
 
         try {
             open();
@@ -199,7 +195,7 @@ public class UserDao extends BaseDao {
                 pstmt.setInt(3, user.getLvl());
                 pstmt.setInt(4, user.getId());
             } else {
-                strSql = "UPDATE LOGIN_USER set login=?,name=?,lvl=?,pwd=PWD_ENCRYPT(?,'" + SECRET + "')"
+                strSql = "UPDATE LOGIN_USER set login=?,name=?,lvl=?,PWD=?"
                         + " WHERE id=?";
                 pstmt = conn.prepareStatement(strSql);
                 pstmt.setString(1, user.getLogin());
@@ -238,7 +234,7 @@ public class UserDao extends BaseDao {
 
         String errMessage = null;
         PreparedStatement pstmt = null;
-        String strSql = "UPDATE LOGIN_USER set login=null,lvl=-1,pwd=null WHERE id=?";
+        String strSql = "UPDATE LOGIN_USER set login=null,lvl=-1,PWD=null WHERE id=?";
 
         try {
             open();

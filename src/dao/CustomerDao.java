@@ -185,8 +185,8 @@ public class CustomerDao extends BaseDao {
         LogUtil.println(this.getClass().getSimpleName() + "#add");
         String errMessage = null;
         PreparedStatement pstmt = null;
-        String strSql = "INSERT INTO CUSTOMER (id,name,zip,address1,address2,tel,fax,email)"
-                + " VALUES(sequence_customer_id.NEXTVAL,?, ?, ?, ?, ?, ?, ?)";
+        String strSql = "INSERT INTO CUSTOMER (name,zip,address1,address2,tel,fax,email)"
+                + " VALUES(?, ?, ?, ?, ?, ?, ?)";
 
         try {
             open();
